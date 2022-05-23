@@ -1,0 +1,10 @@
+.babelrc
+src/docker-compose.dev.yml
+.idea
+.vscode
+
+# production env files (do not exclude sample.env files)
+.env
+postgres.env
+
+replay
