@@ -139,7 +139,7 @@ const FriendsPage: NextPageWithLayout = ({}) => {
                     aria-hidden="true"
                   />
                   <h1 className={(item.nb > 0) ? "font-bold" : ""}>{item.nb}</h1>
-                  <p className="text-center text-sm">{item.name}</p>
+                  <p className="text-center text-xs md:text-sm">{item.name}</p>
                 </div>
               ))}
             </div>
