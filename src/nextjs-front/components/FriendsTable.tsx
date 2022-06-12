@@ -414,7 +414,7 @@ const FriendsTable: React.FC<{
             <button
               className="m-5"
               onClick={() => {
-                setSelected(4);
+                setSelected(5);
               }}
             >
               <IoIosArrowForward className="text-pink-500 text-2xl hover:animate-bounceForward hover:cursor-pointer" />
