@@ -1,5 +1,4 @@
 .babelrc
-src/docker-compose.dev.yml
 .idea
 .vscode
 

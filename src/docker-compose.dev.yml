@@ -1,0 +1,98 @@
+version: '3'
+
+networks:
+  rproxy:
+  backend:
+
+services:
+
+  # reverse proxy
+
+  nginx-rproxy:
+    image: nginx:1.21.5-alpine
+
+    networks:
+      - rproxy
+
+    volumes:
+      - ./rproxy.nginx.conf:/etc/nginx/nginx.conf
+
+    ports:
+      - 8080:80
+
+    restart: unless-stopped
+
+  # frontend
+
+  nextjs-front:
+    build:
+      context: nextjs-front
+      dockerfile: Dockerfile.dev
+
+    networks:
+      - rproxy
+
+    volumes:
+      - ./nextjs-front:/usr/app
+     
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_FT_CLIENT_ID=CHANGE_HERE_WITH_YOUR_API_CLIENT_ID
+      - NEXT_PUBLIC_FT_REDIRECT_URI=http://localhost:8080/validate-fortytwo
+      - NEXT_PUBLIC_SOCKET_URL=http://localhost:8080
+
+    ports:
+      - 3000:3000
+
+    restart: unless-stopped
+
+  # backend
+
+  nestjs-back:
+    build:
+      context: nestjs-back
+      dockerfile: Dockerfile.dev
+
+    networks:
+      - rproxy
+      - backend
+
+    volumes:
+      - ./nestjs-back:/usr/app
+      - ./nestjs-back/avatars:/upload/avatars
+
+    environment:
+      - NODE_ENV=development
+      - POSTGRES_USER=transcendance
+      - POSTGRES_PASSWORD=transcendance
+      - POSTGRES_DB=transcendance
+      - POSTGRES_HOST=postgres
+      - JWT_SECRET=dummy_secret
+      - JWT_LIFETIME=15m
+      - FT_CLIENT_ID=CHANGE_HERE_WITH_YOUR_API_CLIENT_ID
+      - FT_SECRET=CHANGE_HERE_WITH_YOUR_API_SECRET
+      - FT_REDIRECT_URI=http://localhost:8080/validate-fortytwo
+
+    ports:
+      - 6001:3000
+
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:14-alpine3.15
+
+    networks:
+      - backend
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    environment:
+      - POSTGRES_USER=transcendance
+      - POSTGRES_DB=transcendance
+      - POSTGRES_PASSWORD=transcendance
+
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
